@@ -1,5 +1,4 @@
-
-# 2. To-Do List App (Console Version)
+# To-Do List App (Console Version)
 # A personal task management system for organizing daily activities.
 # **Features:**
 
@@ -7,7 +6,6 @@
 # - Mark tasks as completed or pending
 # - View tasks filtered by status or priority
 # - Edit task details after creation
-
 # - Delete tasks individually or clear all completed tasks
 # - Show daily or weekly task summary
 # - Save tasks automatically so they persist between sessions
@@ -30,7 +28,6 @@ def add_task():
     statuses.append("Pending") 
     print("Task added Successfully")
 
-# This part runs the "Add Task" loop
 cont = "yes"
 while cont.lower() == "yes":
     add_task()
@@ -106,8 +103,84 @@ def edit_task():
             edit_cont = input("Invalid number! Try again? (yes/no): ").lower()
 
    
+#task 5: delete a single task 
+def delete_task():
+    choice = int(input("Enter task number to delete: "))
+
+    if 0 <= choice < len(task_title):
+        del task_title[choice]
+        del description[choice]
+        del priority_level[choice]
+        del statuses[choice]
+        print("Task deleted successfully")
+    else:
+        print("Invalid task number")
+
+#clear all completed tasks
+def clear_completed_tasks():
+    i = 0
+    while i < len(statuses):
+        if statuses[i].lower() == "completed":
+            del task_title[i]
+            del description[i]
+            del priority_level[i]
+            del statuses[i]
+        else:
+            i += 1
+    print("Completed tasks have been cleared")
 
 
+#task 6
+def show_summary():
+    total = len(task_title)
+    completed = 0
+    pending = 0
+    
+    for s in statuses:
+        if s.lower() == "completed":
+            completed += 1
+        else:
+            pending += 1
+            
+    print("\n--- Task Summary ---")
+    print(f"Total Tasks: {total}")
+    print(f"Completed: {completed}")
+    print(f"Pending: {pending}")
+
+
+#task 7 
+file_name = "tasklist.txt"
+
+def save_tasks():
+    # 'w' mode opens the file for writing (overwrites previous data)
+    file = open(file_name, "w")
+    for i in range(len(task_title)):
+        # Grabs the same index from all four parallel lists
+        line = f"{task_title[i]},{description[i]},{priority_level[i]},{statuses[i]}\n"
+        file.write(line)
+    file.close()
+    print("Tasks saved successfully")
+
+def load_tasks():
+    # Create the file if it doesn't exist so it doesn't crash on the first run
+    open(file_name, "a").close() 
+    file = open(file_name, "r")
+    for line in file:
+        data = line.strip().split(",") 
+        if len(data) == 4:
+            task_title.append(data[0])
+            description.append(data[1])
+            priority_level.append(data[2])
+            statuses.append(data[3])
+    file.close()
+    print("Tasks have been loaded")
+
+
+load_tasks()
 task_status()
 filter_tasks()
+show_summary() 
 edit_task()     
+delete_task()
+clear_completed_tasks()
+save_tasks()
