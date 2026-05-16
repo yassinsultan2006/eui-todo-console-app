@@ -58,29 +58,49 @@ def task_status():
 
 # task 3: filtering
 def filter_tasks():
-    category = input("Enter filter category (status/priority): ").lower()
+    while True:
+        category = input("\nEnter filter category (status/priority): ").lower()
 
-    if category == "status":
-        choice = input("Enter status (pending/completed): ").lower()
-        print(f"Showing {choice} tasks")
-        for i in range(len(task_title)):
-            if statuses[i].lower() == choice:
-                print(f" Task is {task_title[i]} and status is {statuses[i]}")
+        if category == "status":
+            while True:
+                choice = input("Enter status (pending/completed): ").lower()
+                if choice == "pending" or choice == "completed":
+                    print(f"Showing {choice} tasks")
+                    for i in range(len(task_title)):
+                        if statuses[i].lower() == choice:
+                            print(f" Task is {task_title[i]} and status is {statuses[i]}")
+                    return 
+                print("Invalid status! Please enter 'pending' or 'completed'.")
 
-    elif category == "priority":
-        choice = input("Enter priority (low/medium/high): ").lower()
-        print(f"Showing {choice} priority tasks")
-        for i in range(len(task_title)):
-            if priority_level[i].lower() == choice:
-                print(f" Task is {task_title[i]} and priority is {priority_level[i]}")
-    else:
-        print("Invalid category")
+        elif category == "priority":
+            while True:
+                choice = input("Enter priority (low/medium/high): ").lower()
+                if choice == "low" or choice == "medium" or choice == "high":
+                    print(f"Showing {choice} priority tasks")
+                    for i in range(len(task_title)):
+                        if priority_level[i].lower() == choice:
+                            print(f" Task is {task_title[i]} and priority is {priority_level[i]}")
+                    return 
+                print("Invalid priority! Please enter 'low', 'medium', or 'high'.")
+        else:
+            print("Invalid category! Please enter 'status' or 'priority'.")
 
 
 # task 4: editing task details
 def edit_task():
+    # Real-world scenario check: Ask the user if they even want to edit anything
+    while True:
+        start_edit = input("\nDo you want to edit a task? (yes/no): ").lower()
+        if start_edit == "yes" or start_edit == "no":
+            break
+        print("Invalid input. Please enter 'yes' or 'no'.")
+        
+    if start_edit == "no":
+        print("Editing cancelled.")
+        return  # Safely exits the function entirely
+        
     edit_cont = "yes"
-    while edit_cont.lower() == "yes":
+    while edit_cont == "yes":
 
         choice = int(input("Enter the task number to edit: "))
     
@@ -97,24 +117,50 @@ def edit_task():
                 print("Invalid choice.")
             
             print("Update complete!")
-            edit_cont = input("Do you want to edit another task? (yes/no): ").lower()
+            
+            while True:
+                edit_cont = input("Do you want to edit another task? (yes/no): ").lower()
+                if edit_cont == "yes" or edit_cont == "no":
+                    break
+                print("Invalid input. Please enter 'yes' or 'no'.")
         else:
             print("Invalid task number.")
-            edit_cont = input("Invalid number! Try again? (yes/no): ").lower()
+            
+            while True:
+                edit_cont = input("Invalid number! Try again? (yes/no): ").lower()
+                if edit_cont == "yes" or edit_cont == "no":
+                    break
+                print("Invalid input. Please enter 'yes' or 'no'.")
 
    
 #task 5: delete a single task 
 def delete_task():
-    choice = int(input("Enter task number to delete: "))
+    while True:
+        if len(task_title) == 0:
+            print("No tasks available to delete.")
+            break
+            
+        choice = int(input("Enter task number to delete: "))
 
-    if 0 <= choice < len(task_title):
-        del task_title[choice]
-        del description[choice]
-        del priority_level[choice]
-        del statuses[choice]
-        print("Task deleted successfully")
-    else:
-        print("Invalid task number")
+        if 0 <= choice < len(task_title):
+            del task_title[choice]
+            del description[choice]
+            del priority_level[choice]
+            del statuses[choice]
+            print("Task deleted successfully")
+            break  
+        else:
+            print("Invalid task number. Please try again.")
+            
+            while True:
+                retry = input("Try a different task number? (yes/no): ").lower()
+                if retry == "yes" or retry == "no":
+                    break
+                print("Invalid input. Please enter 'yes' or 'no'.")
+                
+            if retry == "no":
+                print("Deletion cancelled.")
+                break  
 
 #clear all completed tasks
 def clear_completed_tasks():
@@ -165,6 +211,7 @@ def load_tasks():
     # Create the file if it doesn't exist so it doesn't crash on the first run
     open(file_name, "a").close() 
     file = open(file_name, "r")
+    loaded_count = 0
     for line in file:
         data = line.strip().split(",") 
         if len(data) == 4:
@@ -172,8 +219,13 @@ def load_tasks():
             description.append(data[1])
             priority_level.append(data[2])
             statuses.append(data[3])
+            loaded_count += 1
     file.close()
-    print("Tasks have been loaded")
+    
+    if loaded_count > 0:
+        print(f"Tasks have been loaded successfully. Recovered {loaded_count} tasks.")
+    else:
+        print("Tasks file opened. No previous data found, starting fresh.")
 
 
 load_tasks()
